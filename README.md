@@ -13,7 +13,9 @@ Customizable: Users can select their desired currencies to convert from and to, 
 How to Use:
 
 Select Currencies: Choose the currency you want to convert from and the currency you want to convert to.
+
 Enter Amount: Input the amount of currency you wish to convert.
+
 Get Conversion: Click the "Convert" button to instantly see the converted amount.
 
 
