@@ -1,7 +1,7 @@
 # Currency-Convertor
 Welcome to the Currency Converter project! This is a simple yet powerful tool that allows users to convert currencies seamlessly. Built using HTML, CSS, and JavaScript along with Fetch API for real-time currency conversion rates. 
 
-<b>Features<b>:
+<b>Features</b>:
 
 Real-time Currency Conversion: Fetches the latest currency exchange rates from an API to ensure accurate conversions.
 User-Friendly Interface: Intuitive design makes it easy for users to convert currencies hassle-free.
@@ -12,3 +12,5 @@ How to Use:
 Select Currencies: Choose the currency you want to convert from and the currency you want to convert to.
 Enter Amount: Input the amount of currency you wish to convert.
 Get Conversion: Click the "Convert" button to instantly see the converted amount.
+
+
