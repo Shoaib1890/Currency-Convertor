@@ -1,6 +1,6 @@
+const BASE_URL = `https://api.frankfurter.app/latest?amount=1&from=EUR&to=INR`;
 
-const BASE_URL =
-  "https://cdn.jsdelivr.net/gh/fawazahmed0/currency-api@1/latest/currencies";
+
 
 const dropdowns = document.querySelectorAll(".dropdown select");
 const btn = document.querySelector("form button");
@@ -33,14 +33,29 @@ const updateExchangeRate = async () => {
     amtVal = 1;
     amount.value = "1";
   }
-  const URL = `${BASE_URL}/${fromCurr.value.toLowerCase()}/${toCurr.value.toLowerCase()}.json`;
-  let response = await fetch(URL);
-  let data = await response.json();
-  let rate = data[toCurr.value.toLowerCase()];
 
-  let finalAmount = amtVal * rate;
-  msg.innerText = `${amtVal} ${fromCurr.value} = ${finalAmount} ${toCurr.value}`;
+  const from = fromCurr.value;
+  const to = toCurr.value;
+  const URL = `https://api.frankfurter.app/latest?amount=${amtVal}&from=${from}&to=${to}`;
+  console.log("API URL:", URL);
+
+  try {
+    let response = await fetch(URL);
+    let data = await response.json();
+    console.log("API Response:", data);
+
+    if (data.rates && data.rates[to]) {
+      const finalAmount = data.rates[to];
+      msg.innerText = `${amtVal} ${from} = ${finalAmount.toFixed(2)} ${to}`;
+    } else {
+      msg.innerText = "Exchange rate data not available.";
+    }
+  } catch (error) {
+    msg.innerText = "Failed to fetch exchange rate.";
+    console.error("Error fetching exchange rate:", error);
+  }
 };
+
 
 const updateFlag = (element) => {
   let currCode = element.value;
@@ -50,12 +65,10 @@ const updateFlag = (element) => {
   img.src = newSrc;
 };
 
-
 btn.addEventListener("click", (evt) => {
   evt.preventDefault();
   updateExchangeRate();
 });
-
 
 window.addEventListener("load", () => {
   updateExchangeRate();
