@@ -1,63 +1,248 @@
 <!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Currency Convertor</title>
-    <link href="style.css" rel="stylesheet" />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap"
-      rel="stylesheet"
-    />
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Currenzo — Global Currency Exchange Rates</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="ambient-glow glow-1"></div>
+    <div class="ambient-glow glow-2"></div>
 
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
-      integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA=="
-      crossorigin="anonymous"
-      referrerpolicy="no-referrer"
-    />
-  </head>
-  <body>
-    <div class="container">
-      <h2>Currency Converter</h2>
-      <form>
-        <div class="amount">
-          <p>Enter Amout</p>
-          <input value="1" type="text" />
-        </div>
-        <div class="dropdown">
-          <div class="from">
-            <p>From</p>
-            <div class="select-container">
-              <img src="https://flagsapi.com/US/flat/64.png" />
-              <select name="from">
-                <!-- <option value = "USD">USD</option>
-                            <option value = "INR">INR</option>
-                            <option value = "EUR">EUR</option>
-                            <option value = "AUD">AUD</option> -->
-              </select>
+    <div class="app-layout">
+        <!-- Top Navigation / Header -->
+        <header class="app-header">
+            <div class="brand">
+                <div class="brand-icon">
+                    <i class="fa-solid fa-chart-line"></i>
+                </div>
+                <div>
+                    <h1 class="brand-title">Currenzo</h1>
+                    <span class="brand-tag">Institutional FX Engine</span>
+                </div>
             </div>
-          </div>
-          <i class="fa-solid fa-arrow-right-arrow-left"></i>
-          <div class="to">
-            <p>To</p>
-            <div class="select-container">
-              <img src="https://flagsapi.com/IN/flat/64.png" />
-              <select name="to">
-                <!-- <option value = "USD">USD</option>
-                            <option value = "INR" selected>INR</option>
-                            <option value = "EUR">EUR</option>
-                            <option value = "AUD">AUD</option> -->
-              </select>
+
+            <div class="header-actions">
+                <div class="market-status" title="Real-time mid-market rate feeds active">
+                    <span class="status-dot"></span>
+                    <span class="status-text">Live Market</span>
+                </div>
+                <button id="themeToggle" class="icon-btn" aria-label="Toggle Theme" title="Toggle Light / Dark mode">
+                    <i class="fa-regular fa-sun light-icon"></i>
+                    <i class="fa-regular fa-moon dark-icon"></i>
+                </button>
             </div>
-          </div>
-        </div>
-        <div class="msg">1USD = 80INR</div>
-        <button>Get Exchange Rate</button>
-      </form>
+        </header>
+
+        <!-- Main Exchange Console -->
+        <main class="exchange-card">
+            <!-- Popular Currency Quick-Pairs -->
+            <div class="quick-pairs-wrap">
+                <span class="quick-pairs-label">Popular:</span>
+                <div class="quick-pairs" id="quickPairsContainer">
+                    <button type="button" class="pair-chip" data-from="USD" data-to="EUR">USD / EUR</button>
+                    <button type="button" class="pair-chip active" data-from="USD" data-to="INR">USD / INR</button>
+                    <button type="button" class="pair-chip" data-from="GBP" data-to="USD">GBP / USD</button>
+                    <button type="button" class="pair-chip" data-from="EUR" data-to="GBP">EUR / GBP</button>
+                    <button type="button" class="pair-chip" data-from="USD" data-to="JPY">USD / JPY</button>
+                    <button type="button" class="pair-chip" data-from="USD" data-to="AED">USD / AED</button>
+                </div>
+            </div>
+
+            <form id="converterForm" class="converter-form" onsubmit="return false;">
+                <!-- Amount Section -->
+                <div class="input-card amount-card">
+                    <div class="card-header-row">
+                        <label for="amountInput" class="section-label">Amount</label>
+                        <span class="currency-tag" id="amountCurrencyTag">USD</span>
+                    </div>
+
+                    <div class="amount-field-wrapper">
+                        <span class="currency-symbol-prefix" id="fromSymbolPrefix">$</span>
+                        <input
+                            id="amountInput"
+                            type="text"
+                            inputmode="decimal"
+                            value="1,000"
+                            placeholder="0.00"
+                            autocomplete="off"
+                            spellcheck="false"
+                        />
+                        <button type="button" id="clearAmountBtn" class="clear-btn" title="Clear amount" aria-label="Clear">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                    </div>
+
+                    <!-- Preset Amount Quick Buttons -->
+                    <div class="preset-amounts">
+                        <button type="button" class="preset-btn" data-val="100">+100</button>
+                        <button type="button" class="preset-btn" data-val="500">+500</button>
+                        <button type="button" class="preset-btn active" data-val="1000">1,000</button>
+                        <button type="button" class="preset-btn" data-val="5000">5,000</button>
+                        <button type="button" class="preset-btn" data-val="10000">10,000</button>
+                    </div>
+                </div>
+
+                <!-- Currency Pair Selection -->
+                <div class="pair-selection-grid">
+                    <!-- From Currency Tile -->
+                    <div class="currency-tile" id="fromTile" role="button" tabindex="0" aria-label="Change base currency">
+                        <div class="tile-meta">
+                            <span class="tile-caption">From</span>
+                            <div class="currency-badge">
+                                <img id="fromFlag" src="https://flagcdn.com/w80/us.png" alt="US Flag" class="flag-img" onerror="this.src='https://flagsapi.com/US/flat/64.png'">
+                                <div class="currency-naming">
+                                    <span class="currency-code" id="fromCode">USD</span>
+                                    <span class="currency-name" id="fromName">US Dollar</span>
+                                </div>
+                            </div>
+                        </div>
+                        <i class="fa-solid fa-chevron-down dropdown-arrow"></i>
+                    </div>
+
+                    <!-- Swap Button -->
+                    <button type="button" id="swapBtn" class="swap-btn" aria-label="Swap Currencies" title="Swap currencies">
+                        <i class="fa-solid fa-right-left"></i>
+                    </button>
+
+                    <!-- To Currency Tile -->
+                    <div class="currency-tile" id="toTile" role="button" tabindex="0" aria-label="Change target currency">
+                        <div class="tile-meta">
+                            <span class="tile-caption">To</span>
+                            <div class="currency-badge">
+                                <img id="toFlag" src="https://flagcdn.com/w80/in.png" alt="IN Flag" class="flag-img" onerror="this.src='https://flagsapi.com/IN/flat/64.png'">
+                                <div class="currency-naming">
+                                    <span class="currency-code" id="toCode">INR</span>
+                                    <span class="currency-name" id="toName">Indian Rupee</span>
+                                </div>
+                            </div>
+                        </div>
+                        <i class="fa-solid fa-chevron-down dropdown-arrow"></i>
+                    </div>
+                </div>
+
+                <!-- Rate Result Card -->
+                <div class="result-card" id="resultCard">
+                    <div class="result-top">
+                        <div class="conversion-preview" id="conversionSummary">1,000 USD =</div>
+                        <div class="conversion-output">
+                            <span class="result-number" id="resultValue">--</span>
+                            <span class="result-unit" id="resultUnit">INR</span>
+                        </div>
+                    </div>
+
+                    <div class="rate-pills-row">
+                        <div class="rate-pill" id="directRatePill">
+                            <i class="fa-solid fa-arrow-trend-up"></i>
+                            <span id="directRateText">1 USD = -- INR</span>
+                        </div>
+                        <div class="rate-pill secondary" id="inverseRatePill">
+                            <span id="inverseRateText">1 INR = -- USD</span>
+                        </div>
+                    </div>
+
+                    <div class="card-footer-meta">
+                        <div class="update-stamp">
+                            <i class="fa-regular fa-clock"></i>
+                            <span id="lastUpdatedText">Live mid-market rate · Updating...</span>
+                        </div>
+                        <div class="footer-actions">
+                            <button type="button" id="copyBtn" class="action-btn" title="Copy converted amount">
+                                <i class="fa-regular fa-copy"></i>
+                                <span class="action-text">Copy</span>
+                            </button>
+                            <button type="button" id="refreshBtn" class="action-btn" title="Refresh live rate">
+                                <i class="fa-solid fa-arrows-rotate"></i>
+                                <span class="action-text">Refresh</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+
+            <!-- Quick Conversion Reference Table -->
+            <section class="matrix-section">
+                <div class="matrix-header">
+                    <div class="matrix-title">
+                        <i class="fa-solid fa-table-list"></i>
+                        <h3>Conversion Breakdown</h3>
+                    </div>
+                    <span class="matrix-sub" id="matrixSub">Calculated at live mid-market rate</span>
+                </div>
+
+                <div class="matrix-grid" id="matrixGrid">
+                    <!-- Populated dynamically via JS -->
+                </div>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer class="app-footer">
+            <div class="footer-badges">
+                <span><i class="fa-solid fa-shield-halved"></i> Institutional Grade Feeds</span>
+                <span><i class="fa-solid fa-bolt"></i> Zero Latency Engine</span>
+                <span><i class="fa-solid fa-circle-check"></i> 160+ Global Currencies</span>
+            </div>
+            <p class="disclaimer">
+                Mid-market exchange rates provided for informational purposes. All rates refreshed in real time.
+            </p>
+        </footer>
     </div>
+
+    <!-- Searchable Currency Modal Picker -->
+    <div class="modal-backdrop" id="currencyModal" aria-hidden="true">
+        <div class="modal-dialog" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+            <div class="modal-header">
+                <div class="modal-title-wrap">
+                    <h2 id="modalTitle" class="modal-title">Select Currency</h2>
+                    <span class="modal-subtitle" id="modalSub">Select base or target currency</span>
+                </div>
+                <button type="button" class="close-modal-btn" id="closeModalBtn" aria-label="Close modal">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <!-- Search input -->
+            <div class="search-input-wrap">
+                <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                <input
+                    type="text"
+                    id="currencySearchInput"
+                    placeholder="Search by currency code, country, or name..."
+                    autocomplete="off"
+                    spellcheck="false"
+                />
+                <button type="button" id="clearSearchBtn" class="clear-search-btn" style="display:none;">
+                    <i class="fa-solid fa-circle-xmark"></i>
+                </button>
+            </div>
+
+            <!-- Modal Popular Chips -->
+            <div class="modal-popular-section">
+                <span class="popular-heading">Popular Currencies</span>
+                <div class="modal-popular-chips" id="modalPopularChips">
+                    <!-- Dynamic chips -->
+                </div>
+            </div>
+
+            <!-- Currency List -->
+            <div class="currency-list-container" id="currencyListContainer">
+                <!-- Dynamically populated -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast-notification" aria-live="polite"></div>
+
     <script src="codes.js"></script>
     <script src="app.js"></script>
-  </body>
+</body>
 </html>
