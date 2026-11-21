@@ -246,8 +246,8 @@ function renderConversionMatrix(rate, from, to) {
     const converted = unit * activeRate;
     html += `
       <div class="matrix-row">
-        <span class="left">${unit.toLocaleString()} ${baseCurr}</span>
-        <span class="right">${formatNumber(converted, 2)} ${targetCurr}</span>
+        <span class="left">${unit.toLocaleString()} <span class="curr-code">${baseCurr}</span></span>
+        <span class="right">${formatNumber(converted, 2)} <span class="curr-code">${targetCurr}</span></span>
       </div>
     `;
   });
