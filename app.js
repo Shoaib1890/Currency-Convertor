@@ -10,6 +10,7 @@ const state = {
   toCurr: "INR",
   amount: 1000,
   rate: 1,
+  matrixDirection: "direct", // "direct" (from -> to) or "inverse" (to -> from)
   ratesCache: {}, // { "usd": { inr: 84.35, eur: 0.92, ... } }
   activePickerTarget: "from", // "from" or "to"
   isLoading: false
@@ -41,6 +42,10 @@ const elements = {
   refreshBtn: document.getElementById("refreshBtn"),
   matrixGrid: document.getElementById("matrixGrid"),
   matrixSub: document.getElementById("matrixSub"),
+  tabDirect: document.getElementById("tabDirect"),
+  tabInverse: document.getElementById("tabInverse"),
+  intelInverseRate: document.getElementById("intelInverseRate"),
+  intelTargetSymbol: document.getElementById("intelTargetSymbol"),
   currencyModal: document.getElementById("currencyModal"),
   closeModalBtn: document.getElementById("closeModalBtn"),
   currencySearchInput: document.getElementById("currencySearchInput"),
@@ -99,7 +104,7 @@ function showToast(message, icon = "fa-solid fa-circle-check") {
 async function fetchExchangeRates(baseCurrency) {
   const base = baseCurrency.toLowerCase();
   
-  // Return cached rates if fresh
+  // Return cached rates if fresh (10 mins)
   if (state.ratesCache[base] && (Date.now() - state.ratesCache[base].timestamp < 1000 * 60 * 10)) {
     return state.ratesCache[base].data;
   }
@@ -175,8 +180,6 @@ async function updateConversion(forceRefresh = false) {
     elements.resultUnit.textContent = state.toCurr;
 
     // Calculation summary
-    const fromMeta = getCurrencyMeta(state.fromCurr);
-    const toMeta = getCurrencyMeta(state.toCurr);
     elements.conversionSummary.textContent = `${formatNumber(state.amount, 2)} ${state.fromCurr} =`;
 
     // Direct & Inverse Rates
@@ -188,8 +191,9 @@ async function updateConversion(forceRefresh = false) {
     const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     elements.lastUpdatedText.textContent = `Live mid-market rate · Updated today at ${timeStr}`;
 
-    // Update Matrix Breakdown
+    // Update Matrix Breakdown & Intelligence
     renderConversionMatrix(rate, state.fromCurr, state.toCurr);
+    updateMarketIntelligence(rate, inverseRate);
 
     // Update Quick Pair chip active state
     updateActivePairChip();
@@ -215,22 +219,56 @@ function updateActivePairChip() {
   });
 }
 
+// Update Market Intelligence
+function updateMarketIntelligence(rate, inverseRate) {
+  const toMeta = getCurrencyMeta(state.toCurr);
+  elements.intelInverseRate.textContent = `1 ${state.toCurr} = ${formatNumber(inverseRate, 5)} ${state.fromCurr}`;
+  elements.intelTargetSymbol.textContent = `${toMeta.symbol || ""} (${toMeta.code})`;
+}
+
 // Render Conversion Reference Matrix
 function renderConversionMatrix(rate, from, to) {
+  // Update Tab Labels
+  elements.tabDirect.textContent = `${from} → ${to}`;
+  elements.tabInverse.textContent = `${to} → ${from}`;
+
+  const isDirect = state.matrixDirection === "direct";
+  elements.tabDirect.classList.toggle("active", isDirect);
+  elements.tabInverse.classList.toggle("active", !isDirect);
+
+  const activeRate = isDirect ? rate : (rate > 0 ? 1 / rate : 0);
+  const baseCurr = isDirect ? from : to;
+  const targetCurr = isDirect ? to : from;
+
   const units = [1, 5, 10, 25, 50, 100, 500, 1000];
   let html = "";
   units.forEach(unit => {
-    const converted = unit * rate;
+    const converted = unit * activeRate;
     html += `
       <div class="matrix-row">
-        <span class="left">${unit.toLocaleString()} ${from}</span>
-        <span class="right">${formatNumber(converted, 2)} ${to}</span>
+        <span class="left">${unit.toLocaleString()} ${baseCurr}</span>
+        <span class="right">${formatNumber(converted, 2)} ${targetCurr}</span>
       </div>
     `;
   });
   elements.matrixGrid.innerHTML = html;
-  elements.matrixSub.textContent = `1 ${from} = ${formatNumber(rate, 4)} ${to}`;
+  elements.matrixSub.textContent = `1 ${baseCurr} = ${formatNumber(activeRate, 4)} ${targetCurr}`;
 }
+
+// Matrix Tab Switchers
+elements.tabDirect.addEventListener("click", () => {
+  if (state.matrixDirection !== "direct") {
+    state.matrixDirection = "direct";
+    renderConversionMatrix(state.rate, state.fromCurr, state.toCurr);
+  }
+});
+
+elements.tabInverse.addEventListener("click", () => {
+  if (state.matrixDirection !== "inverse") {
+    state.matrixDirection = "inverse";
+    renderConversionMatrix(state.rate, state.fromCurr, state.toCurr);
+  }
+});
 
 // Update Currency Selector Tiles
 function renderSelectedCurrencies() {
@@ -316,7 +354,6 @@ elements.copyBtn.addEventListener("click", async () => {
     await navigator.clipboard.writeText(text);
     showToast("Conversion copied to clipboard!");
   } catch (err) {
-    // Fallback copy
     const textarea = document.createElement("textarea");
     textarea.value = text;
     document.body.appendChild(textarea);
@@ -383,9 +420,7 @@ function renderCurrencyList(filterQuery = "") {
   const query = filterQuery.trim().toLowerCase();
   const currentSelected = state.activePickerTarget === "from" ? state.fromCurr : state.toCurr;
 
-  // Build sorted array of currency codes
   const allCodes = Object.keys(countryList);
-  // Sort so popular ones come first, then alphabetical
   allCodes.sort((a, b) => {
     const aPop = popularCurrencies.indexOf(a);
     const bPop = popularCurrencies.indexOf(b);
@@ -442,7 +477,6 @@ function renderCurrencyList(filterQuery = "") {
 function selectCurrency(code) {
   if (state.activePickerTarget === "from") {
     if (code === state.toCurr) {
-      // Swapping if same
       state.toCurr = state.fromCurr;
     }
     state.fromCurr = code;

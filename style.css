@@ -114,27 +114,27 @@ body {
 }
 
 .glow-1 {
-  width: 500px;
-  height: 500px;
+  width: 550px;
+  height: 550px;
   top: -150px;
   right: -100px;
   background: var(--glow-1);
 }
 
 .glow-2 {
-  width: 450px;
-  height: 450px;
+  width: 500px;
+  height: 500px;
   bottom: -100px;
   left: -100px;
   background: var(--glow-2);
 }
 
-/* Main Layout Wrapper */
+/* Responsive Main Layout */
 .app-layout {
   position: relative;
   z-index: 1;
   width: 100%;
-  max-width: 580px;
+  max-width: 1140px;
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
@@ -159,24 +159,24 @@ body {
 }
 
 .brand-icon {
-  width: 42px;
-  height: 42px;
+  width: 44px;
+  height: 44px;
   border-radius: var(--radius-md);
   background: linear-gradient(135deg, var(--accent-emerald) 0%, #059669 100%);
   color: #ffffff;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.15rem;
-  box-shadow: 0 4px 12px var(--accent-emerald-soft);
+  font-size: 1.25rem;
+  box-shadow: 0 4px 14px var(--accent-emerald-soft);
 }
 
 .brand-title {
-  font-size: 1.35rem;
-  font-weight: 700;
+  font-size: 1.45rem;
+  font-weight: 800;
   letter-spacing: -0.025em;
   color: var(--text-primary);
-  line-height: 1.2;
+  line-height: 1.15;
 }
 
 .brand-tag {
@@ -198,18 +198,18 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 0.45rem;
-  padding: 0.35rem 0.75rem;
+  padding: 0.35rem 0.85rem;
   background: var(--accent-emerald-soft);
-  border: 1px solid rgba(16, 185, 129, 0.2);
+  border: 1px solid rgba(16, 185, 129, 0.25);
   border-radius: var(--radius-full);
 }
 
 .status-dot {
-  width: 7px;
-  height: 7px;
+  width: 8px;
+  height: 8px;
   border-radius: 50%;
   background-color: var(--accent-emerald);
-  box-shadow: 0 0 8px var(--accent-emerald);
+  box-shadow: 0 0 10px var(--accent-emerald);
   animation: pulseDot 2s infinite ease-in-out;
 }
 
@@ -219,15 +219,15 @@ body {
 }
 
 .status-text {
-  font-size: 0.75rem;
+  font-size: 0.78rem;
   font-weight: 600;
   color: var(--accent-emerald);
   letter-spacing: 0.02em;
 }
 
 .icon-btn {
-  width: 38px;
-  height: 38px;
+  width: 40px;
+  height: 40px;
   border-radius: var(--radius-md);
   background: var(--bg-card);
   border: 1px solid var(--border-subtle);
@@ -251,9 +251,17 @@ body {
 [data-theme="light"] .dark-icon { display: block; }
 
 /* ==========================================================================
-   Main Exchange Card
+   Dashboard Grid (Side-by-side on Laptop/Desktop, Stacked on Mobile)
    ========================================================================== */
 
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: 1.15fr 0.85fr;
+  gap: 1.5rem;
+  align-items: stretch;
+}
+
+/* Common Card Styling */
 .exchange-card {
   background: var(--bg-card);
   border: 1px solid var(--border-subtle);
@@ -262,9 +270,14 @@ body {
   box-shadow: var(--card-shadow);
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 1.35rem;
   backdrop-filter: blur(12px);
   transition: border-color var(--transition-normal), box-shadow var(--transition-normal);
+}
+
+/* Left Pane: Converter Console */
+.converter-pane {
+  position: relative;
 }
 
 /* Quick Currency Pairs */
@@ -747,20 +760,22 @@ body {
 }
 
 /* ==========================================================================
-   Matrix Section (Quick Conversion Table)
+   Right Pane: Breakdown & Market Intelligence
    ========================================================================== */
 
-.matrix-section {
-  display: flex;
-  flex-direction: column;
-  gap: 0.85rem;
-  border-top: 1px solid var(--border-subtle);
-  padding-top: 1.25rem;
+.breakdown-card {
+  justify-content: space-between;
 }
 
-.matrix-header {
+.breakdown-header {
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.matrix-title-wrap {
+  display: flex;
+  align-items: baseline;
   justify-content: space-between;
   flex-wrap: wrap;
   gap: 0.5rem;
@@ -770,14 +785,14 @@ body {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  font-size: 0.88rem;
+  font-size: 0.95rem;
   font-weight: 700;
   color: var(--text-primary);
 }
 
 .matrix-title i {
   color: var(--accent-emerald);
-  font-size: 0.82rem;
+  font-size: 0.9rem;
 }
 
 .matrix-sub {
@@ -785,6 +800,42 @@ body {
   color: var(--text-muted);
 }
 
+/* Matrix Direction Tabs */
+.matrix-direction-tabs {
+  display: flex;
+  background: var(--bg-input);
+  border: 1px solid var(--border-subtle);
+  padding: 3px;
+  border-radius: var(--radius-md);
+  gap: 3px;
+}
+
+.matrix-tab {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 0.78rem;
+  font-weight: 700;
+  font-family: var(--font-mono);
+  padding: 0.45rem 0.65rem;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  text-align: center;
+}
+
+.matrix-tab:hover {
+  color: var(--text-primary);
+}
+
+.matrix-tab.active {
+  background: var(--bg-card);
+  color: var(--accent-emerald);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+/* Matrix Table Grid */
 .matrix-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -798,8 +849,14 @@ body {
   background: var(--bg-input);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-sm);
-  padding: 0.5rem 0.85rem;
+  padding: 0.55rem 0.85rem;
   font-size: 0.78rem;
+  transition: background-color var(--transition-fast), border-color var(--transition-fast);
+}
+
+.matrix-row:hover {
+  background: var(--bg-card-subtle);
+  border-color: var(--border-hover);
 }
 
 .matrix-row .left {
@@ -811,6 +868,64 @@ body {
   font-weight: 700;
   font-family: var(--font-mono);
   color: var(--text-primary);
+}
+
+/* Market Intelligence Panel */
+.fx-intel-card {
+  background: var(--bg-input);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 1rem 1.15rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.intel-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.intel-header i {
+  color: var(--accent-blue);
+  font-size: 0.85rem;
+}
+
+.intel-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.75rem;
+}
+
+.intel-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.stat-label {
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.stat-val {
+  font-size: 0.82rem;
+  font-weight: 700;
+  font-family: var(--font-mono);
+  color: var(--text-primary);
+}
+
+.stat-val.highlight {
+  color: var(--accent-emerald);
 }
 
 /* ==========================================================================
@@ -850,7 +965,7 @@ body {
 .disclaimer {
   font-size: 0.7rem;
   color: var(--text-muted);
-  max-width: 440px;
+  max-width: 500px;
   line-height: 1.5;
 }
 
@@ -1168,6 +1283,23 @@ body {
    Responsive Breakpoints
    ========================================================================== */
 
+/* Tablet & Mobile Screens: Stack to single column with smooth vertical flow */
+@media (max-width: 991px) {
+  .app-layout {
+    max-width: 580px;
+  }
+
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+
+  .exchange-card {
+    padding: 1.5rem;
+  }
+}
+
+/* Mobile Small Devices */
 @media (max-width: 520px) {
   body {
     padding: 1.25rem 0.85rem;
@@ -1196,6 +1328,11 @@ body {
 
   .matrix-grid {
     grid-template-columns: 1fr;
+  }
+
+  .intel-stats-grid {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
   }
 
   .modal-dialog {
